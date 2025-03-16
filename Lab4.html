@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordering Website</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #orderDetails { margin-top: 20px; padding: 15px; border: 1px solid black; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to Our Store</h1>
+    <div id="orderDetails"></div>
+
+    <script>
+        alert("Welcome to our SuperDelicious store!");
+        let name = prompt("Enter your name:");
+        let item = prompt("What item would you like to order?");
+        let quantity = parseInt(prompt("Enter the quantity (1-99):"));
+        let currentTime = new Date();
+        let hours = currentTime.getHours();
+        let greeting = "";
+
+        if (hours < 12) {
+            greeting = "Good Morning";
+        } else if (hours < 18) {
+            greeting = "Good Afternoon";
+        } else {
+            greeting = "Good Evening";
+        }
+        let arrivalDate = new Date();
+        arrivalDate.setDate(currentTime.getDate() + 7);
+        let formattedDate = arrivalDate.toDateString();
+        document.getElementById("orderDetails").innerHTML = `
+            <h2>${greeting}, ${name}! Thank you for your order.</h2>
+            <p>You ordered <strong>${quantity}</strong> unit(s) of <strong>${item}</strong>.</p>
+            <p>Your order will arrive on <strong>${formattedDate}</strong>.</p>
+        `;
+    </script>
+ <img src="https://learnitaliango.com/wp-content/uploads/2021/07/delicious-in-Italian.jpg" 
+alt="My prefer Picture" width="540">
+
+</body>
+</html>
