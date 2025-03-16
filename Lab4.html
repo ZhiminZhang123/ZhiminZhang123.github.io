@@ -5,13 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ordering Website</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        #orderDetails { margin-top: 20px; padding: 15px; border: 1px solid black; display: inline-block; }
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 20px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        #orderDetails { 
+            margin-top: 20px; 
+            padding: 15px; 
+            border: 1px solid black; 
+            display: inline-block; 
+        }
+        #bottomImage {
+            margin-top: 30px;
+        }
     </style>
 </head>
 <body>
 
-    <h1>Welcome to Our Store</h1>
+    <h1>Welcome to our SuperDelicious store!</h1>
     <div id="orderDetails"></div>
 
     <script>
@@ -39,8 +56,9 @@
             <p>Your order will arrive on <strong>${formattedDate}</strong>.</p>
         `;
     </script>
- <img src="https://learnitaliango.com/wp-content/uploads/2021/07/delicious-in-Italian.jpg" 
-alt="My prefer Picture" width="540">
+
+    <img id="bottomImage" src="https://learnitaliango.com/wp-content/uploads/2021/07/delicious-in-Italian.jpg" 
+    alt="My preferred Picture" width="540">
 
 </body>
 </html>
