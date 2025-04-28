@@ -39,10 +39,6 @@
       border-radius: 1rem;
       box-shadow: 0 0 15px rgba(0,0,0,0.5);
     }
-
-    .hidden {
-      display: none;
-    }
   </style>
 </head>
 <body>
@@ -60,25 +56,20 @@
         <button type="submit" class="btn btn-primary w-100">Get Car Info</button>
       </form>
 
-      <div id="carResult" class="mt-5 hidden">
-        <!-- The car result will be inserted here -->
-      </div>
-
-      <button id="returnBtn" class="btn btn-secondary w-100 mt-3 hidden">Return to Search</button>
+      <div id="carResult" class="mt-5"></div>
+      <button id="backButton" class="btn btn-secondary mt-4" style="display: none;" onclick="goBack()">Back</button>
     </div>
   </div>
 
   <script>
     const form = document.getElementById('vinForm');
     const resultDiv = document.getElementById('carResult');
-    const returnBtn = document.getElementById('returnBtn');
+    const backButton = document.getElementById('backButton');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const vin = document.getElementById('vin').value.trim();
       resultDiv.innerHTML = '<p>Loading...</p>';
-      resultDiv.classList.remove('hidden');
-      returnBtn.classList.remove('hidden');
 
       try {
         const url = `https://car-api2.p.rapidapi.com/api/vin/${vin}`;
@@ -124,6 +115,7 @@
               </ul>
             </div>
           `;
+          backButton.style.display = 'block';  // Show the back button
         } else {
           resultDiv.innerHTML = '<p>No car data found for that VIN.</p>';
         }
@@ -132,13 +124,10 @@
       }
     });
 
-    // Function to reset the form and hide the result
-    returnBtn.addEventListener('click', () => {
-      resultDiv.classList.add('hidden');
-      returnBtn.classList.add('hidden');
-      form.reset();
-    });
+    function goBack() {
+      resultDiv.innerHTML = '';  // Clear the car result
+      backButton.style.display = 'none';  // Hide the back button
+    }
   </script>
 </body>
 </html>
-
