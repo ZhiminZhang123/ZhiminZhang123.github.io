@@ -39,9 +39,22 @@
       border-radius: 1rem;
       box-shadow: 0 0 15px rgba(0,0,0,0.5);
     }
+
+    .jump-links {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Jump Links to KBB and Edmunds -->
+  <div class="jump-links">
+    <a href="https://www.kbb.com/" target="_blank" class="btn btn-outline-light btn-sm me-2">KBB</a>
+    <a href="https://www.edmunds.com/" target="_blank" class="btn btn-outline-light btn-sm">Edmunds</a>
+  </div>
 
   <div class="background"></div>
 
@@ -56,8 +69,19 @@
         <button type="submit" class="btn btn-primary w-100">Get Car Info</button>
       </form>
 
+      <div id="recentVINsSection" class="mt-4 text-white">
+        <h5>Recently Searched VINs:</h5>
+        <div id="recentVINs" class="d-flex flex-wrap gap-2 mt-2"></div>
+      </div>
+
       <div id="carResult" class="mt-5"></div>
       <button id="backButton" class="btn btn-secondary mt-4" style="display: none;" onclick="goBack()">Back</button>
+
+      <div class="d-grid mt-3">
+        <button onclick="window.open('https://randomvin.com/', '_blank')" class="btn btn-success">
+          Go to Random VIN Generator
+        </button>
+      </div>
     </div>
   </div>
 
@@ -71,6 +95,13 @@
       const vin = document.getElementById('vin').value.trim();
       resultDiv.innerHTML = '<p>Loading...</p>';
 
+      let recent = JSON.parse(localStorage.getItem("recentVINs") || "[]");
+      if (!recent.includes(vin)) {
+        recent.unshift(vin);
+        if (recent.length > 5) recent.pop();
+        localStorage.setItem("recentVINs", JSON.stringify(recent));
+      }
+
       try {
         const url = `https://car-api2.p.rapidapi.com/api/vin/${vin}`;
         const response = await fetch(url, {
@@ -81,41 +112,37 @@
           }
         });
 
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-        console.log("API Response:", data);  
-
-        const car = data;
+        if (!response.ok) throw new Error('Network response was not ok');
+        const car = await response.json();
+        console.log("API Response:", car);
 
         if (car) {
           resultDiv.innerHTML = `
             <div class="card bg-dark text-white shadow p-4">
-              <h2>${car.year || 'N/A'} ${car.make || 'N/A'} ${car.model || 'N/A'} - ${car.trim || 'N/A'}</h2>
+              <h2>${car.year || 'Not Available'} ${car.make || 'Not Available'} ${car.model || 'Not Available'} - ${car.trim || 'Not Available'}</h2>
               <p class="lead">${car.specs?.description || 'Trim description not available.'}</p>
               <h4>Pricing</h4>
               <ul class="list-group list-group-flush mb-3">
-                <li class="list-group-item bg-dark text-white"><strong>MSRP:</strong> $${car.trims?.[0]?.msrp || 'N/A'}</li>
-                <li class="list-group-item bg-dark text-white"><strong>Invoice Price:</strong> $${car.trims?.[0]?.invoice || 'N/A'}</li>
+                <li class="list-group-item bg-dark text-white"><strong>MSRP:</strong> $${car.trims?.[0]?.msrp || 'Not Available'}</li>
+                <li class="list-group-item bg-dark text-white"><strong>Invoice Price:</strong> $${car.trims?.[0]?.invoice || 'Not Available'}</li>
               </ul>
               <h4>Specs</h4>
               <ul class="list-group list-group-flush">
-                <li class="list-group-item bg-dark text-white"><strong>Body Class:</strong> ${car.body_class || 'N/A'}</li>
-                <li class="list-group-item bg-dark text-white"><strong>Engine:</strong> ${car.engine_model || 'N/A'} (${car.displacement_l || 'N/A'}L, ${car.engine_number_of_cylinders || 'N/A'} cyl)</li>
-                <li class="list-group-item bg-dark text-white"><strong>Drive Type:</strong> ${car.drive_type || 'N/A'}</li>
-                <li class="list-group-item bg-dark text-white"><strong>Transmission:</strong> ${car.transmission_style || 'N/A'} (${car.transmission_speeds || 'N/A'} speeds)</li>
-                <li class="list-group-item bg-dark text-white"><strong>Fuel Type:</strong> ${car.fuel_type_primary || 'N/A'}</li>
-                <li class="list-group-item bg-dark text-white"><strong>Seats:</strong> ${car.number_of_seats || 'N/A'}</li>
-                <li class="list-group-item bg-dark text-white"><strong>Airbags:</strong> ${car.front_air_bag_locations || 'N/A'}, ${car.side_air_bag_locations || 'N/A'}</li>
-                <li class="list-group-item bg-dark text-white"><strong>Brakes:</strong> ${car.anti_lock_braking_system_abs || 'N/A'}</li>
-                <li class="list-group-item bg-dark text-white"><strong>TPMS:</strong> ${car.tire_pressure_monitoring_system_tpms_type || 'N/A'}</li>
-                <li class="list-group-item bg-dark text-white"><strong>Plant:</strong> ${car.plant_city || 'N/A'}, ${car.plant_state || 'N/A'}</li>
+                <li class="list-group-item bg-dark text-white"><strong>Body Class:</strong> ${car.body_class || 'Not Available'}</li>
+                <li class="list-group-item bg-dark text-white"><strong>Engine:</strong> ${car.engine_model || 'Not Available'} (${car.displacement_l || 'N/A'}L, ${car.engine_number_of_cylinders || 'N/A'} cyl)</li>
+                <li class="list-group-item bg-dark text-white"><strong>Drive Type:</strong> ${car.drive_type || 'Not Available'}</li>
+                <li class="list-group-item bg-dark text-white"><strong>Transmission:</strong> ${car.transmission_style || 'Not Available'} (${car.transmission_speeds || 'N/A'} speeds)</li>
+                <li class="list-group-item bg-dark text-white"><strong>Fuel Type:</strong> ${car.fuel_type_primary || 'Not Available'}</li>
+                <li class="list-group-item bg-dark text-white"><strong>Seats:</strong> ${car.number_of_seats || 'Not Available'}</li>
+                <li class="list-group-item bg-dark text-white"><strong>Airbags:</strong> ${car.front_air_bag_locations || 'Not Available'}, ${car.side_air_bag_locations || 'Not Available'}</li>
+                <li class="list-group-item bg-dark text-white"><strong>Brakes:</strong> ${car.anti_lock_braking_system_abs || 'Not Available'}</li>
+                <li class="list-group-item bg-dark text-white"><strong>TPMS:</strong> ${car.tire_pressure_monitoring_system_tpms_type || 'Not Available'}</li>
+                <li class="list-group-item bg-dark text-white"><strong>Plant:</strong> ${car.plant_city || 'Not Available'}, ${car.plant_state || 'Not Available'}</li>
               </ul>
             </div>
           `;
-          backButton.style.display = 'block';  // Show the back button
+          backButton.style.display = 'block';
+          displayRecentVINs();
         } else {
           resultDiv.innerHTML = '<p>No car data found for that VIN.</p>';
         }
@@ -125,9 +152,27 @@
     });
 
     function goBack() {
-      resultDiv.innerHTML = '';  // Clear the car result
-      backButton.style.display = 'none';  // Hide the back button
+      resultDiv.innerHTML = '';
+      backButton.style.display = 'none';
     }
+
+    function displayRecentVINs() {
+      const recentDiv = document.getElementById('recentVINs');
+      const recent = JSON.parse(localStorage.getItem("recentVINs") || "[]");
+      recentDiv.innerHTML = '';
+      recent.forEach(v => {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-outline-light';
+        btn.innerText = v;
+        btn.onclick = () => {
+          document.getElementById('vin').value = v;
+          form.dispatchEvent(new Event('submit'));
+        };
+        recentDiv.appendChild(btn);
+      });
+    }
+
+    window.onload = displayRecentVINs;
   </script>
 </body>
 </html>
