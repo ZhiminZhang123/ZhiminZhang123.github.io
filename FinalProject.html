@@ -38,6 +38,8 @@
       padding: 2rem;
       border-radius: 1rem;
       box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     .jump-links {
@@ -68,6 +70,13 @@
         </div>
         <button type="submit" class="btn btn-primary w-100">Get Car Info</button>
       </form>
+      
+<div class="d-grid mt-3">
+  <button id="browseMakesBtn" class="btn btn-info">Browse Makes</button>
+</div>
+<div id="makesList" class="mt-4 text-white" style="display: none;"></div>
+<button id="makesBackButton" class="btn btn-secondary mt-2" style="display: none;">Back</button>
+
 
       <div id="recentVINsSection" class="mt-4 text-white">
         <h5>Recently Searched VINs:</h5>
@@ -82,6 +91,7 @@
           Go to Random VIN Generator
         </button>
       </div>
+
     </div>
   </div>
 
@@ -171,6 +181,50 @@
         recentDiv.appendChild(btn);
       });
     }
+
+   const makesDiv = document.getElementById('makesList');
+const makesBackButton = document.getElementById('makesBackButton');
+
+document.getElementById('browseMakesBtn').addEventListener('click', async () => {
+  makesDiv.style.display = 'block';
+  makesBackButton.style.display = 'inline-block';
+  makesDiv.innerHTML = '<p>Loading makes...</p>';
+
+  try {
+    const url = 'https://car-api2.p.rapidapi.com/api/makes';
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'x-rapidapi-host': 'car-api2.p.rapidapi.com',
+        'x-rapidapi-key': '004b1125c0msh010322fd6646e7cp1fa4d4jsnc6c9e67d6a73'
+      }
+    });
+
+    if (!response.ok) throw new Error('Failed to fetch makes');
+    const data = await response.json();
+
+    if (!Array.isArray(data.data)) {
+      makesDiv.innerHTML = '<p>No makes found.</p>';
+      return;
+    }
+
+    makesDiv.innerHTML = `
+      <h5>Available Car Makes:</h5>
+      <ul class="list-group list-group-flush">
+        ${data.data.map(make => `
+          <li class="list-group-item bg-dark text-white">${make.name}</li>
+        `).join('')}
+      </ul>
+    `;
+  } catch (error) {
+    makesDiv.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
+  }
+});
+
+makesBackButton.addEventListener('click', () => {
+  makesDiv.style.display = 'none';
+  makesBackButton.style.display = 'none';
+});
 
     window.onload = displayRecentVINs;
   </script>
